@@ -84,10 +84,7 @@ function App() {
           
         </Route> */}
         <Route path="/admin/login" Component={AdminLoginPage} />
-        <Route
-          path="/admin/dashboard/"
-          Component={DashboardM / anagementPage}
-        />
+        <Route path="/admin/dashboard/" Component={DashboardManagementPage} />
         <Route
           path="/admin/specialization"
           Component={SpecializationManagementPage}
