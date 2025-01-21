@@ -1,10 +1,44 @@
 import { useEffect, useState } from "react";
-import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -25,12 +59,19 @@ import { parse, isWithinInterval } from "date-fns";
 function generateTimeIntervals(jamMulai, jamSelesai, intervalMinutes = 30) {
   // Convert the start and end times to Date objects
   const startTime = new Date(`1970-01-01T${jamMulai}Z`);
-  const endTime = new Date(`1970-01-01T${jamSelesai || '23:59'}Z`);
+  const endTime = new Date(
+    `1970-01-01T${
+      jamSelesai === "Selesai" || !jamSelesai ? "23:59" : jamSelesai
+    }Z`
+  );
+
+  console.log({ jamMulai, jamSelesai });
 
   const timeIntervals = [];
 
   // Normalize the start time to the next interval boundary
-  const normalizedStartMinutes = Math.ceil(startTime.getMinutes() / intervalMinutes) * intervalMinutes;
+  const normalizedStartMinutes =
+    Math.ceil(startTime.getMinutes() / intervalMinutes) * intervalMinutes;
   startTime.setMinutes(normalizedStartMinutes);
   startTime.setSeconds(0);
 
@@ -49,13 +90,25 @@ function generateTimeIntervals(jamMulai, jamSelesai, intervalMinutes = 30) {
 }
 
 const getAllowedDays = (hari) => {
-  const dayNames = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
+  const dayNames = [
+    "Minggu",
+    "Senin",
+    "Selasa",
+    "Rabu",
+    "Kamis",
+    "Jumat",
+    "Sabtu",
+  ];
 
-  if (hari.includes("-")) {
+  if (hari === "Setiap Hari") {
+    return dayNames.map((v, index) => index);
+  } else if (hari.includes("-")) {
     // Handle range, e.g., "Senin - Kamis"
-    const [startDay, endDay] = hari.split(" - ").map((d) => dayNames.indexOf(d.trim()));
-    return Array.from({ length: 7 }, (_, i) => i).filter(
-      (day) => isWithinInterval(day, { start: startDay, end: endDay })
+    const [startDay, endDay] = hari
+      .split(" - ")
+      .map((d) => dayNames.indexOf(d.trim()));
+    return Array.from({ length: 7 }, (_, i) => i).filter((day) =>
+      isWithinInterval(day, { start: startDay, end: endDay })
     );
   } else {
     // Handle single day, e.g., "Senin"
@@ -72,7 +125,10 @@ const reservasiFormSchema = z.object({
     .min(3, "Nama terlalu pendek")
     .max(50, "Nama terlalu panjang")
     .regex(/^[a-zA-Z\s]+$/, "Nama hanya boleh berisi huruf dan spasi"),
-  age: z.string().min(1, "Umur harus diisi").max(3, "Umur tidak boleh lebih dari 3 digit"),
+  age: z
+    .string()
+    .min(1, "Umur harus diisi")
+    .max(3, "Umur tidak boleh lebih dari 3 digit"),
   phone_number: z
     .string()
     .min(10, "Nomor telepon terlalu pendek")
@@ -114,14 +170,16 @@ const ReservationDetailPage = () => {
 
   const fetchReservations = async () => {
     try {
-      const reservationResponse = await axiosInstance.get("/v1/pasien/data/layanan-spesialisasi/" + params.reservationId);
+      const reservationResponse = await axiosInstance.get(
+        "/v1/pasien/data/layanan-spesialisasi/" + params.reservationId
+      );
       setReservation(reservationResponse.data.data);
     } catch (err) {
-      console.log(err)
-      if(isAxiosError(err)) {
-        toast.error(err.response.data.message)
-      }else if(err instanceof Error) {
-        toast.error(err.message)  
+      console.log(err);
+      if (isAxiosError(err)) {
+        toast.error(err.response.data.message);
+      } else if (err instanceof Error) {
+        toast.error(err.message);
       }
     }
   };
@@ -137,7 +195,7 @@ const ReservationDetailPage = () => {
         umur: values.age,
         no_handphone: values.phone_number,
         address: values.address,
-        gender: values.gender 
+        gender: values.gender,
       });
 
       toast.success("Berhasil membuat reservarsi");
@@ -146,11 +204,11 @@ const ReservationDetailPage = () => {
         navigate("/history");
       }, 2000);
     } catch (err) {
-      console.log(err)
-      if(isAxiosError(err)) {
-        toast.error(err.response.data.message)
-      }else if(err instanceof Error) {
-        toast.error(err.message)  
+      console.log(err);
+      if (isAxiosError(err)) {
+        toast.error(err.response.data.message);
+      } else if (err instanceof Error) {
+        toast.error(err.message);
       }
     }
   };
@@ -179,7 +237,9 @@ const ReservationDetailPage = () => {
                 </BreadcrumbItem>
                 <BreadcrumbSeparator />
                 <BreadcrumbItem>
-                  <BreadcrumbPage className="text-white font-bold">Detail Spesialis</BreadcrumbPage>
+                  <BreadcrumbPage className="text-white font-bold">
+                    Detail Spesialis
+                  </BreadcrumbPage>
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>
@@ -192,10 +252,15 @@ const ReservationDetailPage = () => {
             <div className="flex flex-wrap">
               <Form {...form}>
                 <div className="w-full md:w-1/2">
-                  <h2 className="font-semibold mb-3 text-[#159030]">Tanggal dan Waktu Konsultasi</h2>
+                  <h2 className="font-semibold mb-3 text-[#159030]">
+                    Tanggal dan Waktu Konsultasi
+                  </h2>
 
                   {/* Popover & Calendar */}
-                  <form onSubmit={form.handleSubmit(handleReservation)} className="space-y-8">
+                  <form
+                    onSubmit={form.handleSubmit(handleReservation)}
+                    className="space-y-8"
+                  >
                     <FormField
                       control={form.control}
                       name="date"
@@ -205,14 +270,36 @@ const ReservationDetailPage = () => {
                           <Popover>
                             <PopoverTrigger asChild>
                               <FormControl>
-                                <Button variant={"outline"} className={`w-[240px] pl-3 text-left font-normal border-[#159030] text-[#159030] bg-white hover:bg-[#159030] hover:text-white`}>
-                                  {field.value ? format(field.value, "dd-MM-yyyy", { locale: localeId }) : <span>Pick a date</span>}
+                                <Button
+                                  variant={"outline"}
+                                  className={`w-[240px] pl-3 text-left font-normal border-[#159030] text-[#159030] bg-white hover:bg-[#159030] hover:text-white`}
+                                >
+                                  {field.value ? (
+                                    format(field.value, "dd-MM-yyyy", {
+                                      locale: localeId,
+                                    })
+                                  ) : (
+                                    <span>Pick a date</span>
+                                  )}
                                   <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                                 </Button>
                               </FormControl>
                             </PopoverTrigger>
-                            <PopoverContent className="w-auto p-0" align="start">
-                              <Calendar mode="single" selected={field.value} onSelect={field.onChange} disabled={(date) => !getAllowedDays(reservation.hari).includes(date.getDay()) || date < new Date("1900-01-01")} initialFocus />
+                            <PopoverContent
+                              className="w-auto p-0"
+                              align="start"
+                            >
+                              <Calendar
+                                mode="single"
+                                selected={field.value}
+                                onSelect={field.onChange}
+                                disabled={(date) =>
+                                  !getAllowedDays(reservation.hari).includes(
+                                    date.getDay()
+                                  ) || date < new Date("1900-01-01")
+                                }
+                                initialFocus
+                              />
                             </PopoverContent>
                           </Popover>
                           <FormDescription />
@@ -223,12 +310,20 @@ const ReservationDetailPage = () => {
                   </form>
 
                   <div className="flex flex-col columns-5">
-                    <SelectTime availableTimes={generateTimeIntervals(reservation.jam_mulai, reservation.jam_selesai)} onTimeSelect={handleTimeSelect} />
+                    <SelectTime
+                      availableTimes={generateTimeIntervals(
+                        reservation.jam_mulai,
+                        reservation.jam_selesai
+                      )}
+                      onTimeSelect={handleTimeSelect}
+                    />
                   </div>
                 </div>
 
                 <div className="w-full md:w-1/2">
-                  <h2 className="font-semibold mb-3 text-[#159030] text-center mt-3 md:mt-0">Data Pasien</h2>
+                  <h2 className="font-semibold mb-3 text-[#159030] text-center mt-3 md:mt-0">
+                    Data Pasien
+                  </h2>
 
                   <div className="w-full md:w-1/2 flex flex-col mx-auto mb-3">
                     <FormField
@@ -236,9 +331,14 @@ const ReservationDetailPage = () => {
                       name="name"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-[#159030]">Nama Lengkap</FormLabel>
+                          <FormLabel className="text-[#159030]">
+                            Nama Lengkap
+                          </FormLabel>
                           <FormControl>
-                            <Input placeholder="Masukkan Nama Lengkap" {...field} />
+                            <Input
+                              placeholder="Masukkan Nama Lengkap"
+                              {...field}
+                            />
                           </FormControl>
                           <FormDescription />
                           <FormMessage />
@@ -266,9 +366,14 @@ const ReservationDetailPage = () => {
                       name="phone_number"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-[#159030]">Nomor Telepon</FormLabel>
+                          <FormLabel className="text-[#159030]">
+                            Nomor Telepon
+                          </FormLabel>
                           <FormControl>
-                            <Input placeholder="Masukkan Nomor Telepon" {...field} />
+                            <Input
+                              placeholder="Masukkan Nomor Telepon"
+                              {...field}
+                            />
                           </FormControl>
                           <FormDescription />
                           <FormMessage />
@@ -281,7 +386,9 @@ const ReservationDetailPage = () => {
                       name="address"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-[#159030]">Alamat</FormLabel>
+                          <FormLabel className="text-[#159030]">
+                            Alamat
+                          </FormLabel>
                           <FormControl>
                             <Input placeholder="Masukkan Alamat" {...field} />
                           </FormControl>
@@ -296,19 +403,29 @@ const ReservationDetailPage = () => {
                       name="gender"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel htmlFor="gender" className="text-[#159030]">
+                          <FormLabel
+                            htmlFor="gender"
+                            className="text-[#159030]"
+                          >
                             Jenis Kelamin
                           </FormLabel>
                           <FormControl>
-                            <Select onValueChange={(value) => field.onChange(value)} value={field.value}>
+                            <Select
+                              onValueChange={(value) => field.onChange(value)}
+                              value={field.value}
+                            >
                               <SelectTrigger id="gender">
                                 <SelectValue placeholder="Pilih Jenis Kelamin" />
                               </SelectTrigger>
                               <SelectContent>
                                 <SelectGroup>
                                   <SelectLabel />
-                                  <SelectItem value="Laki-Laki">Laki-Laki</SelectItem>
-                                  <SelectItem value="Perempuan">Perempuan</SelectItem>
+                                  <SelectItem value="Laki-Laki">
+                                    Laki-Laki
+                                  </SelectItem>
+                                  <SelectItem value="Perempuan">
+                                    Perempuan
+                                  </SelectItem>
                                 </SelectGroup>
                               </SelectContent>
                             </Select>
@@ -323,7 +440,9 @@ const ReservationDetailPage = () => {
                   {/* Card */}
                   <Card className="w-2/3 flex flex-col mx-auto">
                     <CardHeader>
-                      <CardTitle className="text-center text-lg">{reservation.nama}</CardTitle>
+                      <CardTitle className="text-center text-lg">
+                        {reservation.nama}
+                      </CardTitle>
                       <CardDescription />
                     </CardHeader>
                     <CardContent className="flex justify-between items-center">
@@ -331,7 +450,10 @@ const ReservationDetailPage = () => {
                       <p>{reservation.waktu}</p>
                     </CardContent>
                     <CardFooter className="flex justify-center">
-                      <Button onClick={form.handleSubmit(handleReservation)} className="w-full bg-[#159030] hover:bg-green-700">
+                      <Button
+                        onClick={form.handleSubmit(handleReservation)}
+                        className="w-full bg-[#159030] hover:bg-green-700"
+                      >
                         Buat Reservasi
                       </Button>
                     </CardFooter>
