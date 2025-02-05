@@ -73,12 +73,12 @@ const SchedulePage = () => {
       <section>
         <div className="container mx-auto px-5 md:px-32">
           <div className="flex flex-col justify-center items-center">
-            <h2 className="text-2xl font-semibold text-[#159030]">
+            <h2 className="text-2xl font-semibold text-[#159030]  my-6">
               Dokter Umum
             </h2>
-            <p className="text-xs md:text-sm my-6">
+            {/* <p className="text-xs md:text-sm my-6">
               Jadwal Dokter Umum 25 November - 1 Desember 2024
-            </p>
+            </p> */}
 
             {/* Table */}
             <Table className="border text-center">
