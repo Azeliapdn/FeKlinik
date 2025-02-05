@@ -76,7 +76,7 @@ const SchedulePage = () => {
             <h2 className="text-2xl font-semibold text-[#159030]">
               Dokter Umum
             </h2>
-            {/* <p className="text-xs md:text-sm my-6">Jadwal Dokter Umum 25 November - 1 Desember 2024</p> */}
+            <p></p>
 
             {/* Table */}
             <Table className="border text-center">
@@ -136,7 +136,7 @@ const SchedulePage = () => {
             <h2 className="text-2xl font-semibold text-[#159030]">
               Dokter Spesialis
             </h2>
-            {/* <p className="text-xs md:text-sm my-6">Jadwal Dokter Spesialis Tahun 2024</p> */}
+            <p></p>
 
             {/* Table */}
             <Table className="border text-center">
