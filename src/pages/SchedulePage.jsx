@@ -135,12 +135,12 @@ const SchedulePage = () => {
           </div>
 
           <div className="flex flex-col justify-center items-center pt-10">
-            <h2 className="text-2xl font-semibold text-[#159030]">
+            <h2 className="text-2xl font-semibold text-[#159030] my-6">
               Dokter Spesialis
             </h2>
-            <p className="text-xs md:text-sm my-6">
+            {/* <p className="text-xs md:text-sm my-6">
               Jadwal Dokter Spesialis Tahun 2024
-            </p>
+            </p> */}
 
             {/* Table */}
             <Table className="border text-center">
